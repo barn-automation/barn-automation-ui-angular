@@ -1,0 +1,60 @@
+<nav class="navbar navbar-expand-lg bg-dark mb-3 sticky-top">
+  <a class="navbar-brand" href="#">Barn Automation</a>
+  <button class="navbar-toggler" type="button" (click)="fixNav()" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon icon-bar"></span>
+    <span class="navbar-toggler-icon icon-bar"></span>
+    <span class="navbar-toggler-icon icon-bar"></span>
+  </button>
+
+  <div #navcollapse class="collapse navbar-collapse" style="flex-basis: 100%;" id="navbarSupportedContent">
+    <div class="d-flex w-100">
+      <div class="mr-auto">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a routerLink="/" routerLinkActive="active" class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/live" routerLinkActive="active" class="nav-link" href="#">Live Data <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              History
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a routerLink="/history/all" routerLinkActive="active" class="dropdown-item" href="#">All Events</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="justify-content-end mr-3">
+        <form class="form-inline my-2 my-lg-0" *ngIf="endpoints.length > 1">
+          <select name="endpoints" id="endpoints" class="text-white form-control" [(ngModel)]="currentEndpoint" (change)="setEndpoint()">
+            <option *ngFor="let e of endpoints" [ngValue]="e">{{e.name}}</option>
+          </select>
+        </form>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="mb-5">
+  <router-outlet></router-outlet>
+</div>
+
+<div class="text-right text-muted fixed-bottom bg-light border-top border-secondary p-1" *ngIf="eventStreamService">
+  <small class="d-inline mr-3">
+    Pi:
+      <span *ngIf="eventStreamService?.eventSource?.readyState === 0" class="text-primary">Connecting</span>
+      <span *ngIf="eventStreamService?.eventSource?.readyState === 2" class="text-danger">Offline</span>
+      <div *ngIf="eventStreamService?.eventSource?.readyState === 1" class="d-inline">
+        <span *ngIf="(!eventStreamService?.lastMessage || eventStreamService?.lastMessage | amDifference: now() :'seconds' : true) < -5" class="text-danger">Appears Offline</span>
+        <span *ngIf="(eventStreamService?.lastMessage && eventStreamService?.lastMessage | amDifference: now() :'seconds' : true) > -5" class="text-success">Appears Online</span>
+      </div>
+  </small>
+  <small class="d-inline" [ngSwitch]="eventStreamService?.eventSource?.readyState || 0">
+    Server:
+    <span *ngSwitchCase="0" class="text-primary">Connecting</span>
+    <span *ngSwitchCase="1" class="text-success">Online</span>
+    <span *ngSwitchCase="2" class="text-danger">Offline</span>
+  </small>
+</div>

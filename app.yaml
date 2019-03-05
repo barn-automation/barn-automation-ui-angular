@@ -1,0 +1,38 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: barn-pi-ui-angular
+  labels:
+    app: barn-pi-ui-angular
+spec:
+  type: LoadBalancer
+  selector:
+    app: barn-pi-ui-angular
+  ports:
+  - port: 80
+    nodePort: 31106
+    targetPort: 80
+    name: http
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: barn-pi-ui-angular
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: barn-pi-ui-angular
+        version: v1
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: barn-pi-ui-angular
+        image: phx.ocir.io/toddrsharp/barn-automation/barn-pi-ui-angular:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+---

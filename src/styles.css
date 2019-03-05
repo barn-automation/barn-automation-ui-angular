@@ -1,0 +1,18 @@
+/* You can add global styles to this file, and also import other style files */
+.ui-panel-images {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+.ui-galleria-panel {
+  width: 100% !important;
+  height: 100% !important;
+}
+.dashboard-action-body {
+  min-height: 300px;
+}
+
+#capture-gallery {
+  max-height: 300px;
+  overflow-y: auto;
+}

@@ -1,0 +1,195 @@
+<div class="row">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+
+    <div class="row">
+      <div class="col-sm d-flex">
+        <div class="card shadow-lg card-stats mb-3 flex-fill">
+          <div class="card-header card-header-primary card-header-icon flex-fill">
+            <div class="card-icon">
+              <i class="material-icons">home</i>
+            </div>
+            <p class="card-category">Door 0</p>
+            <h3 class="card-title">Status: {{doors?.door0.status}}</h3>
+          </div>
+          <div class="card-footer justify-content-end">
+            <button class="btn btn-outline-primary btn-sm" (click)="controlDoor(0)">Unlock</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm d-flex">
+        <div class="card shadow-lg card-stats mb-3 flex-fill">
+          <div class="card-header card-header-rose card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">home</i>
+            </div>
+            <p class="card-category">Door 1</p>
+            <h3 class="card-title">Status: {{doors?.door1.status}}</h3>
+            <h3 class="card-title">Light:  {{doors?.door1.light}}</h3>
+          </div>
+          <div class="card-footer">
+            <div class="w-100 text-right">
+              <button class="btn btn-outline-primary btn-sm mr-3" (click)="controlDoor(1, doors?.door1?.status === CLOSED)">{{ doors?.door1?.status === CLOSED ? 'Open' : 'Close'}}</button>
+              <button class="btn btn-outline-primary btn-sm" (click)="controlLight(DOOR_LED_1, doors?.door1?.light === 'ON' ? OFF : ON)">Turn Light {{doors?.door1?.light === 'ON' ? 'Off' : 'On'}}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-12 col-lg-4">
+        <div class="card shadow-lg card-stats">
+          <div class="card-header card-header-primary card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">cloud_circle</i>
+            </div>
+            <p class="card-category">Current °F</p>
+            <h3 class="card-title">{{currentDegreesF}}
+              <small>°F</small>
+            </h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <span class="">As of: </span>{{tempUpdatedAt}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="card shadow-lg card-stats">
+          <div class="card-header card-header-rose card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">cloud_circle</i>
+            </div>
+            <p class="card-category">Current °C</p>
+            <h3 class="card-title">{{currentDegreesC}}
+              <small>°C</small>
+            </h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <span class="">As of: </span>{{tempUpdatedAt}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="card shadow-lg card-stats">
+          <div class="card-header card-header-info card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">cloud_circle</i>
+            </div>
+            <p class="card-category">Current Humidity</p>
+            <h3 class="card-title">{{currentHumidity}}
+              <small>%</small>
+            </h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <span class="">As of: </span>{{tempUpdatedAt}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-12 col-lg-6 d-flex">
+        <div class="card shadow-lg mb-3 border-secondary">
+          <div class="card-header ">
+            <h4 class="card-title">Temp & Humidity</h4>
+            <p class="card-category">Last 10 Collected Events</p>
+          </div>
+          <div class="card-body">
+            <p-chart #tempChart type="line" [data]="tempChartData"></p-chart>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-6 d-flex">
+        <div class="card shadow-lg mb-3 border-secondary">
+          <div class="card-header ">
+            <h4 class="card-title">Water Level</h4>
+            <p class="card-category">Last 10 Collected Events</p>
+          </div>
+          <div class="card-body">
+            <p-chart #waterChart type="line" [data]="waterChartData"></p-chart>
+          </div>
+
+          <div class="card-footer">
+            <div class="w-100 text-right">
+              <button class="btn btn-sm mr-3" [ngClass]="water0Enabled ? 'btn-danger' : 'btn-primary'" (click)="toggleWater(WATER_0)">{{water0Enabled
+                ? 'Disable' : 'Enable'}} Pump</button>
+              <button class="btn btn-primary btn-sm" [disabled]="!water0Enabled" (click)="emptyWater(WATER_0)">Empty</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-12 col-lg-6 d-flex">
+        <div class="card shadow-lg mb-3 border-secondary">
+          <div class="card-header ">
+            <h4 class="card-title">Light Level</h4>
+            <p class="card-category">Last 10 Collected Events</p>
+          </div>
+          <div class="card-body">
+            <p-chart #lightChart type="line" [data]="lightChartData"></p-chart>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-6 d-flex">
+        <div class="card shadow-lg mb-3 border-secondary">
+          <div class="card-header ">
+            <h4 class="card-title">Motion Capture</h4>
+            <p class="card-category">Images that have been captured on trigger of the motion sensor</p>
+          </div>
+          <div class="card-body">
+            <div *ngIf="!cameraArr.length" class="text-center alert alert-warning">
+              <div class="bold"><i class="fa fa-exclamation-circle text-white"></i> No images available...</div>
+            </div>
+            <div class="row" id="capture-gallery">
+              <div class="col-4 col-sm-4 col-md-3 col-lg-3 mb-3" *ngFor="let img of cameraArr">
+                <a href="#" (click)="selectImg(img)">
+                  <img *ngIf="img" [src]="img.source" class="img-thumbnail img-fluid" [title]="img.title" [alt]="img.alt" />
+                </a>
+              </div>
+            </div>
+            <p-dialog header="Motion Capture" *ngIf="selectedImg" [(visible)]="showImgDialog && selectedImg" [width]="500">
+              <img [src]="selectedImg?.source" class="img-thumbnail img-fluid" [title]="selectedImg?.title" [alt]="selectedImg?.alt" />
+            </p-dialog>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6"></div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Loading" [(visible)]="showLoadingModal" [modal]="true" [width]="600">
+  <div class="alert alert-info d-flex">
+    <div class="align-self-center mr-3">
+      <i class="fa fa-refresh fa-spin fa-3x text-white"></i>
+    </div>
+    <div class="align-self-center font-weight-bold">
+      Connecting to the data source...
+    </div>
+  </div>
+  <div class="alert alert-danger d-flex" *ngIf="dataSourceNotConnecting">
+    <div class="align-self-center mr-3">
+      <i class="fa fa-warning fa-3x text-white"></i>
+    </div>
+    <div class="align-self-center font-weight-bold">It looks like it's taking longer than expected.  Is the service online and the client running?
+    </div>
+  </div>
+  <p-footer *ngIf="dataSourceNotConnecting">
+    <button type="button" pButton icon="fa fa-check" class="btn btn-sm btn-outline-danger" (click)="showLoadingModal = false">Dismiss</button>
+  </p-footer>
+</p-dialog>
