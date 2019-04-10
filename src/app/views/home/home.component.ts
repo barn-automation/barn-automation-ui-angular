@@ -181,21 +181,21 @@ export class HomeComponent implements OnInit, OnDestroy {
   initEventListener() {
     this.eventSource.onmessage = (message) => {
       const event = JSON.parse(message.data);
-      this.liveData = [event.message].concat(this.liveData);
-      if( !event.hasOwnProperty("message") || !event.message.hasOwnProperty("type") ){ return; }
+      this.liveData = [event].concat(this.liveData);
+      if( !event.hasOwnProperty("type") ){ return; }
 
-      switch (event.message.type) {
+      switch (event.type) {
         case ArduinoMessage.TEMP_0:
           if( this.tempLabels.length >= 10 ) this.tempLabels.shift();
           if( this.temperatureArr.length >= 10 ) this.temperatureArr.shift();
           if( this.humidityArr.length >= 10 ) this.humidityArr.shift();
 
-          this.currentDegreesF = event.message.data.fahrenheit;
-          this.currentDegreesC = event.message.data.celsius;
-          this.currentHumidity = event.message.data.humidity;
+          this.currentDegreesF = event.data.fahrenheit;
+          this.currentDegreesC = event.data.celsius;
+          this.currentHumidity = event.data.humidity;
           this.temperatureArr = this.temperatureArr.concat([this.currentDegreesF]);
           this.humidityArr = this.humidityArr.concat([this.currentHumidity]);
-          this.tempUpdatedAt = formatDate(new Date(event.message.capturedAt), 'HH:mm:ss', 'en-US');
+          this.tempUpdatedAt = formatDate(new Date(event.capturedAt), 'HH:mm:ss', 'en-US');
           this.tempLabels = this.tempLabels.concat([this.tempUpdatedAt]);
           this.tempChartData.datasets[0].data = this.temperatureArr;
           this.tempChartData.datasets[1].data = this.humidityArr;
@@ -206,8 +206,8 @@ export class HomeComponent implements OnInit, OnDestroy {
           if( this.lightLabels.length >= 10 ) this.lightLabels.shift();
           if( this.lightArr.length >= 10 ) this.lightArr.shift();
 
-          this.lightArr = this.lightArr.concat([event.message.data.level]);
-          const lightUpdatedAt = formatDate(new Date(event.message.capturedAt), 'HH:mm:ss', 'en-US');
+          this.lightArr = this.lightArr.concat([event.data.level]);
+          const lightUpdatedAt = formatDate(new Date(event.capturedAt), 'HH:mm:ss', 'en-US');
           this.lightLabels = this.lightLabels.concat([lightUpdatedAt]);
           this.lightChartData.datasets[0].data = this.lightArr;
           this.lightChartData.labels = this.lightLabels;
@@ -216,22 +216,22 @@ export class HomeComponent implements OnInit, OnDestroy {
         case ArduinoMessage.WATER_0:
         case ArduinoMessage.WATER_1:
           if( this.waterLabels.length >= 10 ) this.waterLabels.shift();
-          const waterLbl = formatDate(new Date(event.message.capturedAt), 'HH:mm:ss', 'en-US')
+          const waterLbl = formatDate(new Date(event.capturedAt), 'HH:mm:ss', 'en-US')
           if( this.waterLabels.indexOf(waterLbl) === -1 ) {
             this.waterLabels = this.waterLabels.concat([waterLbl]);
           }
           this.waterChartData.labels = this.waterLabels;
 
-          if( event.message.type === ArduinoMessage.WATER_0 ) {
+          if( event.type === ArduinoMessage.WATER_0 ) {
             if( this.water0Arr.length >= 10 ) this.water0Arr.shift();
-            this.water0Arr = this.water0Arr.concat([event.message.data.level]);
-            this.water0Enabled = event.message.data.enabled;
+            this.water0Arr = this.water0Arr.concat([event.data.level]);
+            this.water0Enabled = event.data.enabled;
             this.waterChartData.datasets[0].data = this.water0Arr;
             this.waterChart.refresh();
           }
-          if( event.message.type === ArduinoMessage.WATER_1 ) {
+          if( event.type === ArduinoMessage.WATER_1 ) {
             if( this.water1Arr.length >= 10 ) this.water1Arr.shift();
-            this.water1Arr = this.water1Arr.concat([event.message.data.level]);
+            this.water1Arr = this.water1Arr.concat([event.data.level]);
             this.waterChartData.datasets[1].data = this.water1Arr;
             this.waterChart.refresh();
           }
@@ -239,18 +239,18 @@ export class HomeComponent implements OnInit, OnDestroy {
         case ArduinoMessage.CAMERA_0:
           if( this.cameraArr.length >= 20 ) this.cameraArr.shift();
           this.cameraArr = this.cameraArr.concat({
-            source: `${this.imageBaseUrl}/${event.message.data.key}`,
+            source: `${this.imageBaseUrl}/${event.data.key}`,
             alt: `Motion capture image`,
-            title: `Captured at ${formatDate(event.message.capturedAt, 'full', 'en-US')}`,
+            title: `Captured at ${formatDate(event.capturedAt, 'full', 'en-US')}`,
             class: 'img-fluid'
           });
           break;
         case ArduinoMessage.DOOR_0:
-          this.doors = {door0: {status: event.message.data.status}, door1: this.doors['door1']};
+          this.doors = {door0: {status: event.data.status}, door1: this.doors['door1']};
           //this.changeDetectorRef.detectChanges();
           break;
         case ArduinoMessage.DOOR_1:
-          this.doors = {door0: this.doors['door0'], door1: {status: event.message.data.status, light: event.message.data.light}};
+          this.doors = {door0: this.doors['door0'], door1: {status: event.data.status, light: event.data.light}};
           //this.changeDetectorRef.detectChanges();
           break;
       }
@@ -307,5 +307,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.dataService.sendControlMessage( new ArduinoMessage(lightNum, state) ).subscribe( response => {
       console.log(response);
     });
+  }
+
+  takeSnapshot() {
+    this.dataService.sendControlMessage( new ArduinoMessage(ArduinoMessage.ARDUINO_CAMERA_0, ArduinoMessage.ARDUINO_ON) )
+      .subscribe( response => {
+        console.log(response);
+      });
   }
 }

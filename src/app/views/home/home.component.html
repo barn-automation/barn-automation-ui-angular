@@ -166,6 +166,11 @@
               <img [src]="selectedImg?.source" class="img-thumbnail img-fluid" [title]="selectedImg?.title" [alt]="selectedImg?.alt" />
             </p-dialog>
           </div>
+          <div class="card-footer">
+            <div class="w-100 text-right">
+              <button class="btn btn-sm btn-primary" (click)="takeSnapshot()">Take Snapshot</button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="col-12 col-lg-6"></div>

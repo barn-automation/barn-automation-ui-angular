@@ -18,16 +18,22 @@ export class EventStreamService {
 
   connect(broadcast=true) {
     this.eventSource = new EventSource(this.viewModel.currentEndpoint.streamUrl);
+
     clearTimeout(this.connectCheck);
-    if( broadcast ) this.viewModel.viewModelEmitter.emit({item: 'checkServer'});
+    if( broadcast ) {
+      this.viewModel.viewModelEmitter.emit({item: 'checkServer'});
+    }
+
     this.eventSource.addEventListener('message', (event:MessageEvent) => {
       this.lastMessage = moment(JSON.parse(event.data).timestamp);
     });
+
     this.connectCheck = setTimeout(() => {
       if( this.eventSource.readyState === 0 ) {
         this.eventSource.close();
       }
-    }, 10000)
+    }, 10000);
+
     this.connected = true;
     return this.eventSource;
   }
