@@ -69,8 +69,8 @@ export class LiveTabularComponent implements OnInit, OnDestroy {
     this.eventSource = this.eventStreamService.connect();
     this.eventSourceConnected = true;
     this.eventSource.onmessage = (message) => {
-      const event = JSON.parse(message.data);
-      this.liveData = [event.message].concat(this.liveData);
+      const msg = JSON.parse(message.data);
+      this.liveData = [msg].concat(this.liveData);
     };
   }
 
