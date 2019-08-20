@@ -4,7 +4,7 @@
     <div class="card shadow-lg mb-3">
 
       <div class="card-header ">
-        <h4 class="card-title">All Events ({{totalRecords}})</h4>
+        <h4 class="card-title">All Events ({{totalRecords | number}})</h4>
         <p class="card-category">Paginated list of all recorded events</p>
       </div>
 
@@ -15,6 +15,7 @@
           <ng-template pTemplate="header">
             <tr>
               <th>Type</th>
+              <th>Source</th>
               <th>Captured At</th>
               <th>Data</th>
             </tr>
@@ -22,6 +23,7 @@
           <ng-template pTemplate="body" let-e>
             <tr>
               <td>{{e.type}}</td>
+              <td>{{e.source}}</td>
               <td>{{e.capturedAt}}</td>
               <td>
                 <ul class="mb-0">
